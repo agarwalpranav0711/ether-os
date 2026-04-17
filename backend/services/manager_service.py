@@ -4,6 +4,7 @@ import openai
 import asyncio
 from typing import List, Dict, Any
 
+from models.task_model import Task
 from services.log_service import LogService
 from services.queue_service import QueueService
 from services.task_service import TaskService
