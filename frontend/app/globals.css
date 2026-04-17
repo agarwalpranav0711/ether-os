@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    background: radial-gradient(circle at top, rgba(15, 23, 42, 1) 0%, rgba(2, 6, 23, 1) 100%);
+    color: rgb(248 250 252);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    overflow-x: hidden;
+  }
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-premium {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 
+    inset 0 1px 1px rgba(255, 255, 255, 0.1),
+    0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+.ambient-pulse {
+  animation: ambient-glow 4s ease-in-out infinite;
+}
+
+@keyframes ambient-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(34, 211, 238, 0.05); }
+  50% { box-shadow: 0 0 40px rgba(34, 211, 238, 0.15); }
+}
+
+@layer utilities {
+  .text-gradient {
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-image: linear-gradient(to right, #22d3ee, #c084fc);
+  }
+  .bg-gradient-btn {
+    background: linear-gradient(135deg, #22d3ee 0%, #3b82f6 50%, #c084fc 100%);
+    background-size: 200% auto;
+    transition: 0.5s;
+  }
+  .bg-gradient-btn:hover {
+    background-position: right center;
+  }
+}
