@@ -177,6 +177,9 @@ export const useStore = create<AppState>()(
     }
 
     const newController = new AbortController()
+    
+    // RESTORE: Navigate to /manager immediately
+    router.push('/manager')
 
     set({ 
       isStreaming: true, 
@@ -217,35 +220,40 @@ export const useStore = create<AppState>()(
         }
 
         const chunkText = decoder.decode(value, { stream: true })
+
         buffer += chunkText
         const lines = buffer.split('\n\n')
         buffer = lines.pop() || ''
 
         for (const line of lines) {
           if (line.startsWith('data: ')) {
+            const rawData = line.slice(6).trim()
             
             // Debug track
             set((state) => ({ rawStreamData: [line, ...state.rawStreamData].slice(0, 50) }))
 
             try {
-              const parsed = JSON.parse(line.slice(6).trim())
+              const parsed = JSON.parse(rawData)
               
               if (parsed.type === 'plan') {
                   const dataArray = Array.isArray(parsed.data) ? parsed.data : [parsed.data]
                   set({ stage: 'planning', planTasks: dataArray })
                   if (parsed.task_id) set({ taskId: parsed.task_id })
-                  // Ensure routing
-                  if (window.location.pathname !== '/manager') router.push('/manager')
+
+                  // UX FIX: ensure manager is visible before execution
+                  await new Promise(resolve => setTimeout(resolve, 1500))
               } 
               else if (parsed.type === 'thinking') {
-                  // Fallback support if API sends thinking events
                   const logObj: ThinkingLog = typeof parsed.data === 'string' ? { id: Math.random().toString(), text: parsed.data } : parsed.data
                   set((state) => ({ thinkingLogs: [...state.thinkingLogs, logObj] }))
               }
               else if (parsed.type === 'log') {
+                  // Optional: if you want to ensure it goes to execution page when logs start
                   if (get().stage !== 'execution' && window.location.pathname !== '/execution') {
+                    setTimeout(() => {
                       set({ stage: 'execution' })
                       router.push('/execution')
+                    }, 2000)
                   }
                   
                   const logObj: ExecutionLog = typeof parsed.data === 'string' ? {
@@ -259,10 +267,11 @@ export const useStore = create<AppState>()(
               } 
               else if (parsed.type === 'result') {
                   set({ stage: 'result', finalResult: parsed.data })
+                  // TASK 1: Navigate to /result immediately when result event arrives
+                  router.push('/result')
               }
               else if (parsed.type === 'complete') {
                   set({ isStreaming: false, connectionStatus: 'idle' })
-                  if (window.location.pathname !== '/result') router.push('/result')
               }
             } catch (e) {
                 console.error('Failed to parse SSE line', line)
