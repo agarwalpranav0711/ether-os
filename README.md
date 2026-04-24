@@ -166,4 +166,4 @@ Ether OS is designed for a **Distributed Proxy Model**:
 
 ## ⚖ License
 
-MIT License. Developed by the **Antigravity Team** at DeepMind Advanced Agentic Coding. 🌌
+MIT License.🌌
